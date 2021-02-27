@@ -1,0 +1,9 @@
+{
+  "lengthUnit": "Inch",
+  "exportUnit": "Always Meters",
+  "maxVelocity": 28.0,
+  "maxAcceleration": 6.0,
+  "wheelBase": 20.3,
+  "gameName": "Galactic Search A",
+  "outputDir": "../../src/main/deploy"
+}
