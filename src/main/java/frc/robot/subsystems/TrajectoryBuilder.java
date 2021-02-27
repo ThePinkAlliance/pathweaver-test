@@ -20,12 +20,12 @@ public class TrajectoryBuilder extends SubsystemBase {
 
   public Trajectory ReadTrajectorys(String path) {
     Trajectory trajectory = new Trajectory();
-    Path resolvedPath = Filesystem.getDeployDirectory().toPath().resolve(path);
 
     try {
+      Path resolvedPath = Filesystem.getDeployDirectory().toPath().resolve(path);
       trajectory = TrajectoryUtil.fromPathweaverJson(resolvedPath);
     } catch (IOException ex) {
-      DriverStation.reportError("Unable to open trajectory: " + resolvedPath, ex.getStackTrace());
+      DriverStation.reportError("Unable to open trajectory: " + path, ex.getStackTrace());
     }
 
     return trajectory;

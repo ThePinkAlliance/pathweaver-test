@@ -11,19 +11,25 @@ import java.util.Arrays;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.TrajectoryBuilder;
+import frc.robot.commands.ResetSensors;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -36,6 +42,10 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final TrajectoryBuilder builder = new TrajectoryBuilder();
+  private final Joystick m_joystick = new Joystick(0);
+
+  SendableChooser<String> pickPath = new SendableChooser();
+
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -46,6 +56,14 @@ public class RobotContainer {
     m_driveSubsystem.resetEncoders();
     m_driveSubsystem.resetHeading();
     m_driveSubsystem.resetOdometry();
+
+    pickPath.setDefaultOption("Straight", "output/straight.wpilib.json");
+    pickPath.addOption("Left", "output/left.wpilib.json");
+    pickPath.addOption("Right", "output/right.wpilib.json");
+    pickPath.addOption("Qmark", "output/qmark.wpilib.json");
+    SmartDashboard.putData(pickPath);
+
+
   }
 
   /**
@@ -55,6 +73,8 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    new JoystickButton(m_joystick, 1).whenPressed(new ResetSensors(m_driveSubsystem));
   }
 
   /**
@@ -80,7 +100,8 @@ public class RobotContainer {
     // config
     // );
 
-    Trajectory trajectory = builder.ReadTrajectorys("output/Unnamed.wpilib.json");
+    
+    Trajectory trajectory = builder.ReadTrajectorys(pickPath.getSelected());
 
     RamseteController disabledRamsete = new RamseteController() {
       @Override
@@ -113,6 +134,6 @@ public class RobotContainer {
         }, // m_driveSubsystem::set,
         m_driveSubsystem);
 
-    return command;
+    return command.andThen(() -> m_driveSubsystem.set(0,0));
   }
 }

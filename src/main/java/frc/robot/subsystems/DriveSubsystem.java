@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -51,18 +52,26 @@ public class DriveSubsystem extends SubsystemBase {
     rightDrivePrimary.setInverted(false);
     rightDriveBack.setInverted(false);
 
+    leftDrivePrimary.setNeutralMode(NeutralMode.Coast);
+    leftDriveBack.setNeutralMode(NeutralMode.Coast);
+    rightDrivePrimary.setNeutralMode(NeutralMode.Coast);
+    rightDriveBack.setNeutralMode(NeutralMode.Coast);
+
     leftDriveBack.follow(leftDrivePrimary);
     rightDriveBack.follow(rightDrivePrimary);
+
+    resetEncoders();
+    resetHeading();
   }
 
   public double getYaw() {
     double yaw = navx.getYaw();
-    return Math.IEEEremainder(yaw, 360.0d);
+    return (Math.IEEEremainder(yaw, 360.0d) * -1.0);
   }
 
   public Rotation2d getHeading() {
-    double heading = navx.getAngle();
-    return Rotation2d.fromDegrees(Math.IEEEremainder(heading, 360.0d));
+    double heading = navx.getYaw();
+    return Rotation2d.fromDegrees(Math.IEEEremainder(heading, 360.0d) * -1.0);
   }
 
   public PIDController getLeftPIDController() {
@@ -98,7 +107,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetHeading() {
-    navx.reset();
+    navx.zeroYaw();
   }
 
   public void resetOdometry() {
@@ -121,6 +130,7 @@ public class DriveSubsystem extends SubsystemBase {
             * Units.inchesToMeters(Constants.wheelCircumferenceInches),
         rightDrivePrimary.getSelectedSensorPosition() / Constants.encoderTicksPerRev * Constants.gearRatio
             * Units.inchesToMeters(Constants.wheelCircumferenceInches));
+
 
     SmartDashboard.putNumber("left encoder pos", leftDrivePrimary.getSelectedSensorPosition());
     SmartDashboard.putNumber("right encoder pos", rightDrivePrimary.getSelectedSensorPosition());
