@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Date;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -24,8 +26,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.FRCLogger.src.*;
 
 public class DriveSubsystem extends SubsystemBase {
+
+  FRCLogger speeds = new FRCLogger("speeds.csv");
 
   TalonFX leftDrivePrimary = new TalonFX(4);
   TalonFX leftDriveBack = new TalonFX(5);
@@ -40,9 +45,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(Constants.kS, Constants.kV, Constants.kA);
 
-  PIDController leftPIDController = new PIDController(Constants.kP, 0.0, 0.0);
-
-  PIDController rightPIDController = new PIDController(Constants.kP, 0.0, 0.0);
+  PIDController leftPIDController = new PIDController(Constants.kP, 0.0, Constants.kD);
+  PIDController rightPIDController = new PIDController(Constants.kP, 0.0, Constants.kD);
 
   Pose2d pose;
 
@@ -131,7 +135,6 @@ public class DriveSubsystem extends SubsystemBase {
         rightDrivePrimary.getSelectedSensorPosition() / Constants.encoderTicksPerRev * Constants.gearRatio
             * Units.inchesToMeters(Constants.wheelCircumferenceInches));
 
-
     SmartDashboard.putNumber("left encoder pos", leftDrivePrimary.getSelectedSensorPosition());
     SmartDashboard.putNumber("right encoder pos", rightDrivePrimary.getSelectedSensorPosition());
 
@@ -140,7 +143,20 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("left encoder vel", leftDrivePrimary.getSelectedSensorVelocity());
     SmartDashboard.putNumber("right encoder vel", rightDrivePrimary.getSelectedSensorVelocity());
 
+    speeds.csv.LogWithTime(
+        leftDrivePrimary.getSelectedSensorVelocity() + "," + rightDrivePrimary.getSelectedSensorVelocity() + ",");
+
     SmartDashboard.putNumber("X pose", odometry.getPoseMeters().getTranslation().getX());
     SmartDashboard.putNumber("Y pose", odometry.getPoseMeters().getTranslation().getY());
+
+    leftPIDController.setP(SmartDashboard.getNumber("kP", Constants.kP));
+    rightPIDController.setP(SmartDashboard.getNumber("kP", Constants.kP));
+
+    leftPIDController.setD(SmartDashboard.getNumber("kD", Constants.kD));
+    rightPIDController.setD(SmartDashboard.getNumber("kD", Constants.kD));
+
+    leftPIDController.setI(SmartDashboard.getNumber("kI", Constants.kI));
+    rightPIDController.setI(SmartDashboard.getNumber("kI", Constants.kI));
+
   }
 }

@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,7 +27,6 @@ import frc.robot.subsystems.TrajectoryBuilder;
 import frc.robot.commands.ResetSensors;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -46,7 +44,6 @@ public class RobotContainer {
 
   SendableChooser<String> pickPath = new SendableChooser();
 
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -63,7 +60,9 @@ public class RobotContainer {
     pickPath.addOption("Qmark", "output/qmark.wpilib.json");
     SmartDashboard.putData(pickPath);
 
-
+    SmartDashboard.putNumber("kP", Constants.kP);
+    SmartDashboard.putNumber("kD", Constants.kD);
+    SmartDashboard.putNumber("kI", Constants.kI);
   }
 
   /**
@@ -92,16 +91,10 @@ public class RobotContainer {
 
     config.setKinematics(m_driveSubsystem.getKinematics());
 
-    // Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-    // Arrays.asList(
-    // new Pose2d(),
-    // new Pose2d(3, -2, Rotation2d.fromDegrees(0))
-    // ),
-    // config
-    // );
+    Trajectory trajectory = TrajectoryGenerator
+        .generateTrajectory(Arrays.asList(new Pose2d(), new Pose2d(1, 0, new Rotation2d())), config);
 
-    
-    Trajectory trajectory = builder.ReadTrajectorys(pickPath.getSelected());
+    // Trajectory trajectory = builder.ReadTrajectorys(pickPath.getSelected());
 
     RamseteController disabledRamsete = new RamseteController() {
       @Override
@@ -134,6 +127,6 @@ public class RobotContainer {
         }, // m_driveSubsystem::set,
         m_driveSubsystem);
 
-    return command.andThen(() -> m_driveSubsystem.set(0,0));
+    return command.andThen(() -> m_driveSubsystem.set(0, 0));
   }
 }
