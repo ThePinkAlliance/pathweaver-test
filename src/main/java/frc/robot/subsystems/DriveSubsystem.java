@@ -149,10 +149,10 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("right encoder vel", rightDrivePrimary.getSelectedSensorVelocity());
 
     speeds.csv.LogWithTime(
-        leftDrivePrimary.getSelectedSensorVelocity() + "," + rightDrivePrimary.getSelectedSensorVelocity() + ",");
+        leftDrivePrimary.getSelectedSensorVelocity() + "," + rightDrivePrimary.getSelectedSensorVelocity());
 
     positions.csv.LogWithTime(
-        leftDrivePrimary.getSelectedSensorPosition() + "," + rightDrivePrimary.getSelectedSensorPosition() + ",");
+        leftDrivePrimary.getSelectedSensorPosition() + "," + rightDrivePrimary.getSelectedSensorPosition());
 
     SmartDashboard.putNumber("X pose", odometry.getPoseMeters().getTranslation().getX());
     SmartDashboard.putNumber("Y pose", odometry.getPoseMeters().getTranslation().getY());
