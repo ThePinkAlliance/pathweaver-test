@@ -100,7 +100,7 @@ public class DriveSubsystem extends SubsystemBase {
     System.out.println("L: " + leftVoltage);
     System.out.println("R: " + rightVoltage);
 
-    drivetrain.csv.LogWithTime(leftVoltage + "," + rightVoltage + ",");
+    drivetrain.csv.LogWithTime(leftVoltage + "," + rightVoltage);
 
     leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage / 12);
     rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage / 12);
