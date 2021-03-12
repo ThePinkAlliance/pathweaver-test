@@ -91,10 +91,11 @@ public class RobotContainer {
 
     config.setKinematics(m_driveSubsystem.getKinematics());
 
-    Trajectory trajectory = TrajectoryGenerator
-        .generateTrajectory(Arrays.asList(new Pose2d(), new Pose2d(1, 0, new Rotation2d())), config);
+    // Trajectory trajectory = TrajectoryGenerator
+    // .generateTrajectory(Arrays.asList(new Pose2d(), new Pose2d(1, 0, new
+    // Rotation2d())), config);
 
-    // Trajectory trajectory = builder.ReadTrajectorys(pickPath.getSelected());
+    Trajectory trajectory = builder.ReadTrajectorys(pickPath.getSelected());
 
     RamseteController disabledRamsete = new RamseteController() {
       @Override
@@ -110,9 +111,7 @@ public class RobotContainer {
     var m_rightMeasurement = NetworkTableInstance.getDefault().getTable("troubleshooting")
         .getEntry("right_measurement");
 
-    RamseteCommand command = new RamseteCommand(trajectory, m_driveSubsystem::getPose, disabledRamsete, // new
-                                                                                                        // RamseteController(2.0,
-                                                                                                        // 0.7),
+    RamseteCommand command = new RamseteCommand(trajectory, m_driveSubsystem::getPose, new RamseteController(.1, .5),
         m_driveSubsystem.getFeedForward(), m_driveSubsystem.getKinematics(), m_driveSubsystem::getWheelSpeeds,
         m_driveSubsystem.getLeftPIDController(), m_driveSubsystem.getRightPIDController(), (leftVolts, rightVolts) -> {
           m_driveSubsystem.set(leftVolts, rightVolts);

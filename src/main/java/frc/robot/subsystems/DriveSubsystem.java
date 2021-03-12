@@ -31,6 +31,8 @@ import frc.robot.FRCLogger.src.*;
 public class DriveSubsystem extends SubsystemBase {
 
   FRCLogger speeds = new FRCLogger("speeds.csv");
+  FRCLogger positions = new FRCLogger("positions.csv");
+  FRCLogger drivetrain = new FRCLogger("drivetrain.csv");
 
   TalonFX leftDrivePrimary = new TalonFX(4);
   TalonFX leftDriveBack = new TalonFX(5);
@@ -97,6 +99,9 @@ public class DriveSubsystem extends SubsystemBase {
   public void set(double leftVoltage, double rightVoltage) {
     System.out.println("L: " + leftVoltage);
     System.out.println("R: " + rightVoltage);
+
+    drivetrain.csv.LogWithTime(leftVoltage + "," + rightVoltage + ",");
+
     leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage / 12);
     rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage / 12);
   }
@@ -145,6 +150,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     speeds.csv.LogWithTime(
         leftDrivePrimary.getSelectedSensorVelocity() + "," + rightDrivePrimary.getSelectedSensorVelocity() + ",");
+
+    positions.csv.LogWithTime(
+        leftDrivePrimary.getSelectedSensorPosition() + "," + rightDrivePrimary.getSelectedSensorPosition() + ",");
 
     SmartDashboard.putNumber("X pose", odometry.getPoseMeters().getTranslation().getX());
     SmartDashboard.putNumber("Y pose", odometry.getPoseMeters().getTranslation().getY());
