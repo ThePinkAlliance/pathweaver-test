@@ -7,8 +7,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.Date;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -30,9 +28,15 @@ import frc.robot.FRCLogger.src.*;
 
 public class DriveSubsystem extends SubsystemBase {
 
-  FRCLogger speeds = new FRCLogger("speeds.csv");
-  FRCLogger positions = new FRCLogger("positions.csv");
-  FRCLogger drivetrain = new FRCLogger("drivetrain.csv");
+  String[] speedRows = { "leftDrivePrimary", "rightDrivePrimary" };
+  String[] positionRows = { "leftDrivePrimary", "rightDrivePrimary" };
+  String[] drivetrainRows = { "leftVoltage", "rightVoltage" };
+  String[] gyro_logRows = { "headingDegrees" };
+
+  FRCLogger speeds = new FRCLogger("speeds.csv", speedRows);
+  FRCLogger positions = new FRCLogger("positions.csv", positionRows);
+  FRCLogger drivetrain = new FRCLogger("drivetrain.csv", drivetrainRows);
+  FRCLogger gyro_log = new FRCLogger("gryo.csv", gyro_logRows);
 
   TalonFX leftDrivePrimary = new TalonFX(4);
   TalonFX leftDriveBack = new TalonFX(5);
@@ -150,6 +154,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     speeds.csv.LogWithTime(
         leftDrivePrimary.getSelectedSensorVelocity() + "," + rightDrivePrimary.getSelectedSensorVelocity());
+
+    gyro_log.csv.LogWithTime(getHeading().getDegrees());
 
     positions.csv.LogWithTime(
         leftDrivePrimary.getSelectedSensorPosition() + "," + rightDrivePrimary.getSelectedSensorPosition());
