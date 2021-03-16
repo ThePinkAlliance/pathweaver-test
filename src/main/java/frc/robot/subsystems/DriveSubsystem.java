@@ -92,6 +92,13 @@ public class DriveSubsystem extends SubsystemBase {
     return rightPIDController;
   }
 
+  public void SetBrake() {
+    leftDrivePrimary.setNeutralMode(NeutralMode.Brake);
+    leftDriveBack.setNeutralMode(NeutralMode.Brake);
+    rightDriveBack.setNeutralMode(NeutralMode.Brake);
+    rightDrivePrimary.setNeutralMode(NeutralMode.Brake);
+  }
+
   public SimpleMotorFeedforward getFeedForward() {
     return feedForward;
   }
@@ -108,6 +115,14 @@ public class DriveSubsystem extends SubsystemBase {
 
     leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage / 12);
     rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage / 12);
+  }
+
+  public void setTeleop(double leftVoltage, double rightVoltage) {
+    System.out.println("L: " + leftVoltage);
+    System.out.println("R: " + rightVoltage);
+
+    leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage * -1.0);
+    rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage * -1.0);
   }
 
   public Pose2d getPose() {
@@ -133,6 +148,10 @@ public class DriveSubsystem extends SubsystemBase {
             * Units.inchesToMeters(Constants.wheelCircumferenceInches),
         rightDrivePrimary.getSelectedSensorVelocity() * Constants.gearRatio * 10.0 / Constants.encoderTicksPerRev
             * Units.inchesToMeters(Constants.wheelCircumferenceInches));
+  }
+
+  public float GetCompass() {
+    return this.navx.getCompassHeading();
   }
 
   @Override
@@ -162,6 +181,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("X pose", odometry.getPoseMeters().getTranslation().getX());
     SmartDashboard.putNumber("Y pose", odometry.getPoseMeters().getTranslation().getY());
+
+    SmartDashboard.putString("Compass Heading", "" + this.GetCompass());
 
     leftPIDController.setP(SmartDashboard.getNumber("kP", Constants.kP));
     rightPIDController.setP(SmartDashboard.getNumber("kP", Constants.kP));

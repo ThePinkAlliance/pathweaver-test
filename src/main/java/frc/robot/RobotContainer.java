@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,6 +26,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.TrajectoryBuilder;
 import frc.robot.FRCLogger.src.FRCLogger;
 import frc.robot.commands.ResetSensors;
+import frc.robot.commands.Teleop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -77,6 +77,9 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    m_driveSubsystem.setDefaultCommand(
+        new Teleop(this.m_driveSubsystem, () -> m_joystick.getRawAxis(1), () -> m_joystick.getRawAxis(3)));
 
     new JoystickButton(m_joystick, 1).whenPressed(new ResetSensors(m_driveSubsystem));
   }
