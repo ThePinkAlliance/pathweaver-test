@@ -8,6 +8,7 @@
 package frc.robot;
 
 import java.util.Arrays;
+import java.util.List;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.TrajectoryBuilder;
+import frc.robot.FRCLogger.src.FRCLogger;
 import frc.robot.commands.ResetSensors;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -42,7 +44,10 @@ public class RobotContainer {
   private final TrajectoryBuilder builder = new TrajectoryBuilder();
   private final Joystick m_joystick = new Joystick(0);
 
-  SendableChooser<String> pickPath = new SendableChooser();
+  String[] ramsetRows = { "leftRef", "leftMeasure", "rightRef", "rightMeasure" };
+  FRCLogger ramseteLogger = new FRCLogger("ramset.csv", ramsetRows);
+
+  SendableChooser<List<Pose2d>> pickPath = new SendableChooser<List<Pose2d>>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -54,10 +59,10 @@ public class RobotContainer {
     m_driveSubsystem.resetHeading();
     m_driveSubsystem.resetOdometry();
 
-    pickPath.setDefaultOption("Straight", "output/straight.wpilib.json");
-    pickPath.addOption("Left", "output/left.wpilib.json");
-    pickPath.addOption("Right", "output/right.wpilib.json");
-    pickPath.addOption("Qmark", "output/qmark.wpilib.json");
+    pickPath.setDefaultOption("A Blue", Trajectorys.PathABlue);
+    pickPath.addOption("A Red", Trajectorys.PathARed);
+    pickPath.addOption("B Blue", Trajectorys.PathBBlue);
+    pickPath.addOption("B Red", Trajectorys.PathBRed);
     SmartDashboard.putData(pickPath);
 
     SmartDashboard.putNumber("kP", Constants.kP);
@@ -91,11 +96,10 @@ public class RobotContainer {
 
     config.setKinematics(m_driveSubsystem.getKinematics());
 
-    // Trajectory trajectory = TrajectoryGenerator
-    // .generateTrajectory(Arrays.asList(new Pose2d(), new Pose2d(1, 0, new
-    // Rotation2d())), config);
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(pickPath.getSelected(), config);
 
-    Trajectory trajectory = builder.ReadTrajectorys(pickPath.getSelected());
+    // Pathweaver needs more debugging
+    // Trajectory trajectory = builder.ReadTrajectorys(pickPath.getSelected());
 
     RamseteController disabledRamsete = new RamseteController() {
       @Override
@@ -111,9 +115,12 @@ public class RobotContainer {
     var m_rightMeasurement = NetworkTableInstance.getDefault().getTable("troubleshooting")
         .getEntry("right_measurement");
 
-    RamseteCommand command = new RamseteCommand(trajectory, m_driveSubsystem::getPose, new RamseteController(.1, .5),
+    RamseteCommand command = new RamseteCommand(trajectory, m_driveSubsystem::getPose, new RamseteController(2.0, .7), // .1
+                                                                                                                       // .5
         m_driveSubsystem.getFeedForward(), m_driveSubsystem.getKinematics(), m_driveSubsystem::getWheelSpeeds,
-        m_driveSubsystem.getLeftPIDController(), m_driveSubsystem.getRightPIDController(), (leftVolts, rightVolts) -> {
+        m_driveSubsystem.getLeftPIDController(), m_driveSubsystem.getRightPIDController(),
+
+        (leftVolts, rightVolts) -> {
           m_driveSubsystem.set(leftVolts, rightVolts);
 
           m_leftMeasurement.setNumber(
@@ -123,7 +130,13 @@ public class RobotContainer {
           m_rightMeasurement.setNumber(
               m_driveSubsystem.getFeedForward().calculate(m_driveSubsystem.getWheelSpeeds().rightMetersPerSecond));
           m_rightReference.setNumber(-rightVolts);
-        }, // m_driveSubsystem::set,
+
+          ramseteLogger.csv.LogWithTime(leftVolts + ","
+              + m_driveSubsystem.getFeedForward().calculate(m_driveSubsystem.getWheelSpeeds().leftMetersPerSecond) + ","
+              + -rightVolts + ","
+              + m_driveSubsystem.getFeedForward().calculate(m_driveSubsystem.getWheelSpeeds().rightMetersPerSecond));
+        },
+        // m_driveSubsystem::set,
         m_driveSubsystem);
 
     return command.andThen(() -> m_driveSubsystem.set(0, 0));
