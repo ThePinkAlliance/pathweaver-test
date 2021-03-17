@@ -138,6 +138,10 @@ public class DriveSubsystem extends SubsystemBase {
     navx.zeroYaw();
   }
 
+  public void resetOdometryTo(Pose2d pose) {
+    odometry.resetPosition(pose, getHeading());
+  }
+
   public void resetOdometry() {
     odometry.resetPosition(new Pose2d(), getHeading());
   }

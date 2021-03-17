@@ -47,7 +47,7 @@ public class RobotContainer {
   String[] ramsetRows = { "leftRef", "leftMeasure", "rightRef", "rightMeasure" };
   FRCLogger ramseteLogger = new FRCLogger("ramset.csv", ramsetRows);
 
-  SendableChooser<List<Pose2d>> pickPath = new SendableChooser<List<Pose2d>>();
+  SendableChooser<String> pickPath = new SendableChooser<String>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -59,10 +59,15 @@ public class RobotContainer {
     m_driveSubsystem.resetHeading();
     m_driveSubsystem.resetOdometry();
 
-    pickPath.setDefaultOption("A Blue", Trajectorys.PathABlue);
-    pickPath.addOption("A Red", Trajectorys.PathARed);
-    pickPath.addOption("B Blue", Trajectorys.PathBBlue);
-    pickPath.addOption("B Red", Trajectorys.PathBRed);
+    // pickPath.setDefaultOption("A Blue", Trajectorys.PathABlue);
+    // pickPath.addOption("A Red", Trajectorys.PathARed);
+    // pickPath.addOption("B Blue", Trajectorys.PathBBlue);
+    // pickPath.addOption("B Red", Trajectorys.PathBRed);
+
+    pickPath.addOption("Straght", "output/straight.wpilib.json");
+    pickPath.addOption("left", "output/right.wpilib.json");
+    pickPath.addOption("right", "output/left.wpilib.json");
+    pickPath.addOption("qmark", "output/qmark.wpilib.json");
     SmartDashboard.putData(pickPath);
 
     SmartDashboard.putNumber("kP", Constants.kP);
@@ -99,10 +104,11 @@ public class RobotContainer {
 
     config.setKinematics(m_driveSubsystem.getKinematics());
 
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(pickPath.getSelected(), config);
+    // Trajectory trajectory =
+    // TrajectoryGenerator.generateTrajectory(pickPath.getSelected(), config);
 
     // Pathweaver needs more debugging
-    // Trajectory trajectory = builder.ReadTrajectorys(pickPath.getSelected());
+    Trajectory trajectory = builder.ReadTrajectorys(pickPath.getSelected());
 
     RamseteController disabledRamsete = new RamseteController() {
       @Override
@@ -141,6 +147,8 @@ public class RobotContainer {
         },
         // m_driveSubsystem::set,
         m_driveSubsystem);
+
+    m_driveSubsystem.resetOdometryTo(trajectory.getInitialPose());
 
     return command.andThen(() -> m_driveSubsystem.set(0, 0));
   }
