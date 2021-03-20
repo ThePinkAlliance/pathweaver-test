@@ -65,9 +65,13 @@ public class RobotContainer {
     // pickPath.addOption("B Red", Trajectorys.PathBRed);
 
     pickPath.addOption("Straght", "output/straight.wpilib.json");
-    pickPath.addOption("left", "output/right.wpilib.json");
-    pickPath.addOption("right", "output/left.wpilib.json");
+    pickPath.addOption("left", "output/left.wpilib.json");
+    pickPath.addOption("right", "output/right.wpilib.json");
     pickPath.addOption("qmark", "output/qmark.wpilib.json");
+    pickPath.addOption("A-Blue", "output/A-Blue.wpilib.json");
+    pickPath.addOption("A-Red", "output/A-Red.wpilib.json");
+    pickPath.addOption("B-Blue", "output/B-Blue.wpilib.json");
+    pickPath.addOption("B-Red", "output/B-Red.wpilib.json");
     SmartDashboard.putData(pickPath);
 
     SmartDashboard.putNumber("kP", Constants.kP);
@@ -99,6 +103,7 @@ public class RobotContainer {
     m_driveSubsystem.resetEncoders();
     m_driveSubsystem.resetHeading();
     m_driveSubsystem.resetOdometry();
+    m_driveSubsystem.SetCoast();
 
     TrajectoryConfig config = new TrajectoryConfig(3.97350993, 2);
 

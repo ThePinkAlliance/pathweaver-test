@@ -92,6 +92,13 @@ public class DriveSubsystem extends SubsystemBase {
     return rightPIDController;
   }
 
+  public void SetCoast() {
+    leftDrivePrimary.setNeutralMode(NeutralMode.Coast);
+    leftDriveBack.setNeutralMode(NeutralMode.Coast);
+    rightDrivePrimary.setNeutralMode(NeutralMode.Coast);
+    rightDriveBack.setNeutralMode(NeutralMode.Coast);
+  }
+
   public void SetBrake() {
     leftDrivePrimary.setNeutralMode(NeutralMode.Brake);
     leftDriveBack.setNeutralMode(NeutralMode.Brake);
@@ -123,6 +130,18 @@ public class DriveSubsystem extends SubsystemBase {
 
     leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage * -1.0);
     rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage * -1.0);
+  }
+
+  public void setTeleopLeft(double leftVoltage) {
+    System.out.println("L: " + leftVoltage);
+
+    leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage);
+  }
+
+  public void setTeleopRight(double rightVoltage) {
+    System.out.println("R: " + rightVoltage);
+
+    rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage);
   }
 
   public Pose2d getPose() {

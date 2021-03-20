@@ -33,7 +33,28 @@ public class Teleop extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drive.setTeleop(m_left.getAsDouble(), m_right.getAsDouble());
+    double left = m_left.getAsDouble();
+    double right = m_right.getAsDouble();
+
+    if (right < 0) {
+      double cal_right = right * right;
+      drive.setTeleopRight(cal_right);
+    }
+
+    if (left < 0) {
+      double cal_left = left * left;
+      drive.setTeleopLeft(cal_left);
+    }
+
+    if (right > 0) {
+      double cal_right = right * right;
+      drive.setTeleopRight(-cal_right);
+    }
+
+    if (left > 0) {
+      double cal_left = left * left;
+      drive.setTeleopLeft(-cal_left);
+    }
   }
 
   // Called once the command ends or is interrupted.
