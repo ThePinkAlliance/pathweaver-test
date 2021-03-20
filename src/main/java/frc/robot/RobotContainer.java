@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.TrajectoryBuilder;
-import frc.robot.FRCLogger.src.FRCLogger;
+import frc.robot.FRCLogger.FRCLogger;
 import frc.robot.commands.ResetSensors;
 import frc.robot.commands.Teleop;
 import edu.wpi.first.wpilibj2.command.Command;
