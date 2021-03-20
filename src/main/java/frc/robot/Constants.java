@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean constants. This class should not be used for any other
@@ -20,9 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-
     // first 14 -> 62
-    // sec 27 -> 62
+    // second 27 -> 62
 
     public static final double distBetweenWheelsInches = 25;// 26.84603809585759;
     public static final double gearRatio = 1 / 13.72;

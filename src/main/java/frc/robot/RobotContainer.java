@@ -7,9 +7,6 @@
 
 package frc.robot;
 
-import java.util.Arrays;
-import java.util.List;
-
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -21,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.TrajectoryBuilder;
 import frc.robot.FRCLogger.src.FRCLogger;
@@ -59,11 +55,6 @@ public class RobotContainer {
     m_driveSubsystem.resetHeading();
     m_driveSubsystem.resetOdometry();
 
-    // pickPath.setDefaultOption("A Blue", Trajectorys.PathABlue);
-    // pickPath.addOption("A Red", Trajectorys.PathARed);
-    // pickPath.addOption("B Blue", Trajectorys.PathBBlue);
-    // pickPath.addOption("B Red", Trajectorys.PathBRed);
-
     pickPath.addOption("Straght", "output/straight.wpilib.json");
     pickPath.addOption("left", "output/left.wpilib.json");
     pickPath.addOption("right", "output/right.wpilib.json");
@@ -72,8 +63,8 @@ public class RobotContainer {
     pickPath.addOption("A-Red", "output/A-Red.wpilib.json");
     pickPath.addOption("B-Blue", "output/B-Blue.wpilib.json");
     pickPath.addOption("B-Red", "output/B-Red.wpilib.json");
-    SmartDashboard.putData(pickPath);
 
+    SmartDashboard.putData(pickPath);
     SmartDashboard.putNumber("kP", Constants.kP);
     SmartDashboard.putNumber("kD", Constants.kD);
     SmartDashboard.putNumber("kI", Constants.kI);
@@ -86,7 +77,6 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
     m_driveSubsystem.setDefaultCommand(
         new Teleop(this.m_driveSubsystem, () -> m_joystick.getRawAxis(1), () -> m_joystick.getRawAxis(3)));
 
@@ -99,20 +89,14 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-
     m_driveSubsystem.resetEncoders();
     m_driveSubsystem.resetHeading();
     m_driveSubsystem.resetOdometry();
     m_driveSubsystem.SetCoast();
 
     TrajectoryConfig config = new TrajectoryConfig(3.97350993, 2);
-
     config.setKinematics(m_driveSubsystem.getKinematics());
 
-    // Trajectory trajectory =
-    // TrajectoryGenerator.generateTrajectory(pickPath.getSelected(), config);
-
-    // Pathweaver needs more debugging
     Trajectory trajectory = builder.ReadTrajectorys(pickPath.getSelected());
 
     RamseteController disabledRamsete = new RamseteController() {
@@ -149,9 +133,7 @@ public class RobotContainer {
               + m_driveSubsystem.getFeedForward().calculate(m_driveSubsystem.getWheelSpeeds().leftMetersPerSecond) + ","
               + -rightVolts + ","
               + m_driveSubsystem.getFeedForward().calculate(m_driveSubsystem.getWheelSpeeds().rightMetersPerSecond));
-        },
-        // m_driveSubsystem::set,
-        m_driveSubsystem);
+        }, m_driveSubsystem);
 
     m_driveSubsystem.resetOdometryTo(trajectory.getInitialPose());
 
