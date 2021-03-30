@@ -1,4 +1,4 @@
-package frc.robot.FRCLogger.src;
+package frc.robot.FRCLogger;
 
 // Csv Extention For FRC Logger
 public class Csv extends Filemanger {
@@ -8,15 +8,18 @@ public class Csv extends Filemanger {
   public Csv(String filename, String[] rows) {
     super(filename);
 
-    for (int i = 0; i != rows.length; i++) {
-      String row = rows[i];
-
-      // this is what the expected output is " row one,"
-      row = " " + row + ",";
-
-      // adds the currently formated row to compressed rows
-      CompressedRows += row;
+    if (rows != null) {
+      for (int i = 0; i != rows.length; i++) {
+        String row = rows[i];
+  
+        // this is what the expected output is " row one,"
+        row = " " + row + ",";
+  
+        // adds the currently formated row to compressed rows
+        CompressedRows += row;
+      }
     }
+
   }
 
   public void LogWithTime(Object data) {

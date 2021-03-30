@@ -7,19 +7,23 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRCLogger.FRCLogger;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.player.Recorder;
 
 public class Teleop extends CommandBase {
   private DriveSubsystem drive;
   private DoubleSupplier m_left;
   private DoubleSupplier m_right;
+  private Recorder recorder;
 
   /** Creates a new Teleop. */
-  public Teleop(DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right) {
+  public Teleop(DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right, FRCLogger logger) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.drive = drive;
     this.m_left = left;
     this.m_right = right;
+    this.recorder = new Recorder(logger);
 
     addRequirements(drive);
   }
@@ -36,25 +40,22 @@ public class Teleop extends CommandBase {
     double left = m_left.getAsDouble();
     double right = m_right.getAsDouble();
 
-    if (right < 0) {
-      double cal_right = right * right;
-      drive.setTeleopRight(cal_right);
-    }
-
-    if (left < 0) {
-      double cal_left = left * left;
-      drive.setTeleopLeft(cal_left);
-    }
-
+    double cal_right = right * right;
+    double cal_left = left * left;
+    
     if (right > 0) {
-      double cal_right = right * right;
-      drive.setTeleopRight(-cal_right);
+      cal_right = -cal_right;
     }
-
+    
     if (left > 0) {
-      double cal_left = left * left;
-      drive.setTeleopLeft(-cal_left);
+      cal_left = -cal_left;
     }
+    
+    drive.setTeleopRight(cal_right);
+    drive.setTeleopLeft(cal_left);
+
+    recorder.WriteData(cal_left, cal_right);
+    System.out.println(cal_left + " " + cal_right);
   }
 
   // Called once the command ends or is interrupted.

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.FRCLogger.FRCLogger;
 import frc.robot.commands.ConveyorAutomated;
 import frc.robot.commands.DoNothing;
 import frc.robot.commands.ResetSensors;
@@ -33,6 +34,8 @@ public class RobotContainer {
   // private final PathweaverDash dash = new PathweaverDash();
   
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+
+  private final FRCLogger logger = new FRCLogger("macro.csv", null);
   
   private final TrajectoryBuilder builder = new TrajectoryBuilder();
   
@@ -71,7 +74,7 @@ public class RobotContainer {
   
   private void configureButtonBindings() {
     this.m_conveyor.setDefaultCommand((Command)new ConveyorAutomated(this.m_conveyor, this.m_collector));
-    this.m_driveSubsystem.setDefaultCommand((Command)new Teleop(this.m_driveSubsystem, () -> this.m_joystick.getRawAxis(1), () -> this.m_joystick.getRawAxis(3)));
+    this.m_driveSubsystem.setDefaultCommand((Command)new Teleop(this.m_driveSubsystem, () -> this.m_joystick.getRawAxis(1), () -> this.m_joystick.getRawAxis(3), logger));
     (new JoystickButton((GenericHID)this.m_joystick, 1)).whenPressed((Command)new ResetSensors(this.m_driveSubsystem));
     (new JoystickButton((GenericHID)this.m_joystick, 2)).whenHeld((Command)new Vomit(this.m_conveyor, this.m_collector));
   }
