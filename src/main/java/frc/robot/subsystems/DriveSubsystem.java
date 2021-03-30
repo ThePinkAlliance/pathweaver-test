@@ -1,17 +1,10 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -24,198 +17,180 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.FRCLogger.*;
-import frc.robot.FRCLogger.src.FRCLogger;
 
 public class DriveSubsystem extends SubsystemBase {
+  String[] speedRows = new String[] { "leftDrivePrimary", "rightDrivePrimary" };
 
-  String[] speedRows = { "leftDrivePrimary", "rightDrivePrimary" };
-  String[] positionRows = { "leftDrivePrimary", "rightDrivePrimary" };
-  String[] drivetrainRows = { "leftVoltage", "rightVoltage" };
-  String[] gyro_logRows = { "headingDegrees" };
+  String[] positionRows = new String[] { "leftDrivePrimary", "rightDrivePrimary" };
 
-  FRCLogger speeds = new FRCLogger("speeds.csv", speedRows);
-  FRCLogger positions = new FRCLogger("positions.csv", positionRows);
-  FRCLogger drivetrain = new FRCLogger("drivetrain.csv", drivetrainRows);
-  FRCLogger gyro_log = new FRCLogger("gryo.csv", gyro_logRows);
+  String[] drivetrainRows = new String[] { "leftVoltage", "rightVoltage" };
+
+  String[] gyro_logRows = new String[] { "headingDegrees" };
+
+  // FRCLogger speeds = new FRCLogger("speeds.csv", this.speedRows);
+
+  // FRCLogger positions = new FRCLogger("positions.csv", this.positionRows);
+
+  // FRCLogger drivetrain = new FRCLogger("drivetrain.csv", this.drivetrainRows);
+
+  // FRCLogger gyro_log = new FRCLogger("gryo.csv", this.gyro_logRows);
 
   TalonFX leftDrivePrimary = new TalonFX(4);
+
   TalonFX leftDriveBack = new TalonFX(5);
+
   TalonFX rightDrivePrimary = new TalonFX(6);
+
   TalonFX rightDriveBack = new TalonFX(7);
 
   AHRS navx = new AHRS(SPI.Port.kMXP);
 
-  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(
-      Units.inchesToMeters(Constants.distBetweenWheelsInches));
+  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(25.0D));
+
   DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(getHeading());
 
-  SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(Constants.kS, Constants.kV, Constants.kA);
+  SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(0.596D, 1.49D, 0.0951D);
 
-  PIDController leftPIDController = new PIDController(Constants.kP, 0.0, Constants.kD);
-  PIDController rightPIDController = new PIDController(Constants.kP, 0.0, Constants.kD);
+  PIDController leftPIDController = new PIDController(Constants.kP, 0.0D, Constants.kD);
+
+  PIDController rightPIDController = new PIDController(Constants.kP, 0.0D, Constants.kD);
 
   Pose2d pose;
 
   public DriveSubsystem() {
-    leftDrivePrimary.setInverted(true);
-    leftDriveBack.setInverted(true);
-    rightDrivePrimary.setInverted(false);
-    rightDriveBack.setInverted(false);
-
-    leftDrivePrimary.setNeutralMode(NeutralMode.Coast);
-    leftDriveBack.setNeutralMode(NeutralMode.Coast);
-    rightDrivePrimary.setNeutralMode(NeutralMode.Coast);
-    rightDriveBack.setNeutralMode(NeutralMode.Coast);
-
-    leftDriveBack.follow(leftDrivePrimary);
-    rightDriveBack.follow(rightDrivePrimary);
-
+    this.leftDrivePrimary.setInverted(true);
+    this.leftDriveBack.setInverted(true);
+    this.rightDrivePrimary.setInverted(false);
+    this.rightDriveBack.setInverted(false);
+    this.leftDrivePrimary.setNeutralMode(NeutralMode.Coast);
+    this.leftDriveBack.setNeutralMode(NeutralMode.Coast);
+    this.rightDrivePrimary.setNeutralMode(NeutralMode.Coast);
+    this.rightDriveBack.setNeutralMode(NeutralMode.Coast);
+    this.leftDriveBack.follow((IMotorController) this.leftDrivePrimary);
+    this.rightDriveBack.follow((IMotorController) this.rightDrivePrimary);
     resetEncoders();
-    resetHeading();
   }
 
   public double getYaw() {
-    double yaw = navx.getYaw();
-    return (Math.IEEEremainder(yaw, 360.0d) * -1.0);
+    double yaw = this.navx.getYaw();
+    return Math.IEEEremainder(yaw, 360.0D) * -1.0D;
   }
 
   public Rotation2d getHeading() {
-    double heading = navx.getYaw();
-    return Rotation2d.fromDegrees(Math.IEEEremainder(heading, 360.0d) * -1.0);
+    double heading = this.navx.getYaw();
+    return Rotation2d.fromDegrees(Math.IEEEremainder(heading, 360.0D) * -1.0D);
   }
 
   public PIDController getLeftPIDController() {
-    return leftPIDController;
+    return this.leftPIDController;
   }
 
   public PIDController getRightPIDController() {
-    return rightPIDController;
+    return this.rightPIDController;
   }
 
   public void SetCoast() {
-    leftDrivePrimary.setNeutralMode(NeutralMode.Coast);
-    leftDriveBack.setNeutralMode(NeutralMode.Coast);
-    rightDrivePrimary.setNeutralMode(NeutralMode.Coast);
-    rightDriveBack.setNeutralMode(NeutralMode.Coast);
+    this.leftDrivePrimary.setNeutralMode(NeutralMode.Coast);
+    this.leftDriveBack.setNeutralMode(NeutralMode.Coast);
+    this.rightDrivePrimary.setNeutralMode(NeutralMode.Coast);
+    this.rightDriveBack.setNeutralMode(NeutralMode.Coast);
   }
 
   public void SetBrake() {
-    leftDrivePrimary.setNeutralMode(NeutralMode.Brake);
-    leftDriveBack.setNeutralMode(NeutralMode.Brake);
-    rightDriveBack.setNeutralMode(NeutralMode.Brake);
-    rightDrivePrimary.setNeutralMode(NeutralMode.Brake);
+    this.leftDrivePrimary.setNeutralMode(NeutralMode.Brake);
+    this.leftDriveBack.setNeutralMode(NeutralMode.Brake);
+    this.rightDriveBack.setNeutralMode(NeutralMode.Brake);
+    this.rightDrivePrimary.setNeutralMode(NeutralMode.Brake);
   }
 
   public SimpleMotorFeedforward getFeedForward() {
-    return feedForward;
+    return this.feedForward;
   }
 
   public DifferentialDriveKinematics getKinematics() {
-    return kinematics;
+    return this.kinematics;
   }
 
   public void set(double leftVoltage, double rightVoltage) {
-    System.out.println("L: " + leftVoltage);
-    System.out.println("R: " + rightVoltage);
-
-    drivetrain.csv.LogWithTime(leftVoltage + "," + rightVoltage);
-
-    leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage / 12);
-    rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage / 12);
+    // this.drivetrain.csv.LogWithTime("" + leftVoltage + "," + leftVoltage);
+    this.leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage / 12.0D);
+    this.rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage / 12.0D);
   }
 
   public void setTeleop(double leftVoltage, double rightVoltage) {
-    System.out.println("L: " + leftVoltage);
-    System.out.println("R: " + rightVoltage);
-
-    leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage * -1.0);
-    rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage * -1.0);
+    this.leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage * -1.0D);
+    this.rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage * -1.0D);
   }
 
   public void setTeleopLeft(double leftVoltage) {
-    System.out.println("L: " + leftVoltage);
-
-    leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage);
+    this.leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage);
   }
 
   public void setTeleopRight(double rightVoltage) {
-    System.out.println("R: " + rightVoltage);
-
-    rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage);
+    this.rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage);
   }
 
   public Pose2d getPose() {
-    return pose;
+    return this.pose;
   }
 
   public void resetEncoders() {
-    leftDrivePrimary.setSelectedSensorPosition(0);
-    rightDrivePrimary.setSelectedSensorPosition(0);
+    this.leftDrivePrimary.setSelectedSensorPosition(0.0D);
+    this.rightDrivePrimary.setSelectedSensorPosition(0.0D);
   }
 
   public void resetHeading() {
-    navx.zeroYaw();
+    this.navx.zeroYaw();
   }
 
   public void resetOdometryTo(Pose2d pose) {
-    odometry.resetPosition(pose, getHeading());
+    this.odometry.resetPosition(pose, getHeading());
   }
 
   public void resetOdometry() {
-    odometry.resetPosition(new Pose2d(), getHeading());
+    this.odometry.resetPosition(new Pose2d(), getHeading());
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(
-        leftDrivePrimary.getSelectedSensorVelocity() * Constants.gearRatio * 10.0 / Constants.encoderTicksPerRev
-            * Units.inchesToMeters(Constants.wheelCircumferenceInches),
-        rightDrivePrimary.getSelectedSensorVelocity() * Constants.gearRatio * 10.0 / Constants.encoderTicksPerRev
-            * Units.inchesToMeters(Constants.wheelCircumferenceInches));
+        this.leftDrivePrimary.getSelectedSensorVelocity() * 0.07288629737609328D * 10.0D / 2048.0D
+            * Units.inchesToMeters(17.27875959474386D),
+        this.rightDrivePrimary.getSelectedSensorVelocity() * 0.07288629737609328D * 10.0D / 2048.0D
+            * Units.inchesToMeters(17.27875959474386D));
   }
 
   public float GetCompass() {
     return this.navx.getCompassHeading();
   }
 
-  @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    pose = odometry.update(getHeading(),
-        leftDrivePrimary.getSelectedSensorPosition() / Constants.encoderTicksPerRev * Constants.gearRatio
-            * Units.inchesToMeters(Constants.wheelCircumferenceInches),
-        rightDrivePrimary.getSelectedSensorPosition() / Constants.encoderTicksPerRev * Constants.gearRatio
-            * Units.inchesToMeters(Constants.wheelCircumferenceInches));
-
-    SmartDashboard.putNumber("left encoder pos", leftDrivePrimary.getSelectedSensorPosition());
-    SmartDashboard.putNumber("right encoder pos", rightDrivePrimary.getSelectedSensorPosition());
-
+    this.pose = this.odometry.update(getHeading(),
+        this.leftDrivePrimary.getSelectedSensorPosition() / 2048.0D * 0.07288629737609328D
+            * Units.inchesToMeters(17.27875959474386D),
+        this.rightDrivePrimary.getSelectedSensorPosition() / 2048.0D * 0.07288629737609328D
+            * Units.inchesToMeters(17.27875959474386D));
+    SmartDashboard.putNumber("left encoder pos", this.leftDrivePrimary.getSelectedSensorPosition());
+    SmartDashboard.putNumber("right encoder pos", this.rightDrivePrimary.getSelectedSensorPosition());
     SmartDashboard.putNumber("heading", getYaw());
+    SmartDashboard.putNumber("left encoder vel", this.leftDrivePrimary.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("right encoder vel", this.rightDrivePrimary.getSelectedSensorVelocity());
+    // this.speeds.csv.LogWithTime("" + this.leftDrivePrimary.getSelectedSensorVelocity() + ","
+    //     + this.leftDrivePrimary.getSelectedSensorVelocity());
+    // this.gyro_log.csv.LogWithTime(Double.valueOf(getHeading().getDegrees()));
+    // this.positions.csv.LogWithTime("" + this.leftDrivePrimary.getSelectedSensorPosition() + ","
+    //     + this.leftDrivePrimary.getSelectedSensorPosition());
 
-    SmartDashboard.putNumber("left encoder vel", leftDrivePrimary.getSelectedSensorVelocity());
-    SmartDashboard.putNumber("right encoder vel", rightDrivePrimary.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("X pose", this.odometry.getPoseMeters().getTranslation().getX());
+    SmartDashboard.putNumber("Y pose", this.odometry.getPoseMeters().getTranslation().getY());
+    SmartDashboard.putString("Compass Heading", "" + GetCompass());
 
-    speeds.csv.LogWithTime(
-        leftDrivePrimary.getSelectedSensorVelocity() + "," + rightDrivePrimary.getSelectedSensorVelocity());
+    this.leftPIDController.setP(SmartDashboard.getNumber("kP", Constants.kP));
+    this.rightPIDController.setP(SmartDashboard.getNumber("kP", Constants.kP));
+    this.leftPIDController.setD(SmartDashboard.getNumber("kD", Constants.kD));
+    this.rightPIDController.setD(SmartDashboard.getNumber("kD", Constants.kD));
+    this.leftPIDController.setI(SmartDashboard.getNumber("kI", Constants.kI));
+    this.rightPIDController.setI(SmartDashboard.getNumber("kI", Constants.kI));
 
-    gyro_log.csv.LogWithTime(getHeading().getDegrees());
-
-    positions.csv.LogWithTime(
-        leftDrivePrimary.getSelectedSensorPosition() + "," + rightDrivePrimary.getSelectedSensorPosition());
-
-    SmartDashboard.putNumber("X pose", odometry.getPoseMeters().getTranslation().getX());
-    SmartDashboard.putNumber("Y pose", odometry.getPoseMeters().getTranslation().getY());
-
-    SmartDashboard.putString("Compass Heading", "" + this.GetCompass());
-
-    leftPIDController.setP(SmartDashboard.getNumber("kP", Constants.kP));
-    rightPIDController.setP(SmartDashboard.getNumber("kP", Constants.kP));
-
-    leftPIDController.setD(SmartDashboard.getNumber("kD", Constants.kD));
-    rightPIDController.setD(SmartDashboard.getNumber("kD", Constants.kD));
-
-    leftPIDController.setI(SmartDashboard.getNumber("kI", Constants.kI));
-    rightPIDController.setI(SmartDashboard.getNumber("kI", Constants.kI));
-
+    // this.dash.SendRobotPosition(this.odometry.getPoseMeters(), getHeading().getDegrees());
   }
 }
