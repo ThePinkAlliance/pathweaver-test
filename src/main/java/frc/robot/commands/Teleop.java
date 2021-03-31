@@ -4,9 +4,12 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Collector;
+import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class Teleop extends CommandBase {
@@ -60,6 +63,7 @@ public class Teleop extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    drive.SetCoast();
   }
 
   // Returns true when the command should end.

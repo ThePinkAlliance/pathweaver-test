@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.FRCLogger.*;
-import frc.robot.FRCLogger.src.FRCLogger;
+import frc.robot.PathweaverDash.PathweaverDash;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -55,9 +55,13 @@ public class DriveSubsystem extends SubsystemBase {
   PIDController leftPIDController = new PIDController(Constants.kP, 0.0, Constants.kD);
   PIDController rightPIDController = new PIDController(Constants.kP, 0.0, Constants.kD);
 
+  PathweaverDash dash;
+
   Pose2d pose;
 
-  public DriveSubsystem() {
+  public DriveSubsystem(PathweaverDash dash) {
+    this.dash = dash;
+
     leftDrivePrimary.setInverted(true);
     leftDriveBack.setInverted(true);
     rightDrivePrimary.setInverted(false);
@@ -72,7 +76,7 @@ public class DriveSubsystem extends SubsystemBase {
     rightDriveBack.follow(rightDrivePrimary);
 
     resetEncoders();
-    resetHeading();
+    // resetHeading();
   }
 
   public double getYaw() {
@@ -116,8 +120,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void set(double leftVoltage, double rightVoltage) {
-    System.out.println("L: " + leftVoltage);
-    System.out.println("R: " + rightVoltage);
 
     drivetrain.csv.LogWithTime(leftVoltage + "," + rightVoltage);
 
@@ -126,22 +128,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setTeleop(double leftVoltage, double rightVoltage) {
-    System.out.println("L: " + leftVoltage);
-    System.out.println("R: " + rightVoltage);
-
     leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage * -1.0);
     rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage * -1.0);
   }
 
   public void setTeleopLeft(double leftVoltage) {
-    System.out.println("L: " + leftVoltage);
-
     leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage);
   }
 
   public void setTeleopRight(double rightVoltage) {
-    System.out.println("R: " + rightVoltage);
-
     rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage);
   }
 
@@ -217,5 +212,6 @@ public class DriveSubsystem extends SubsystemBase {
     leftPIDController.setI(SmartDashboard.getNumber("kI", Constants.kI));
     rightPIDController.setI(SmartDashboard.getNumber("kI", Constants.kI));
 
+    dash.SendRobotPosition(odometry.getPoseMeters(), getHeading().getDegrees());
   }
 }

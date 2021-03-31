@@ -1,4 +1,4 @@
-package frc.robot.FRCLogger.src;
+package frc.robot.FRCLogger;
 
 import java.io.BufferedWriter;
 import java.io.File;

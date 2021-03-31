@@ -1,4 +1,4 @@
-package frc.robot.FRCLogger.src;
+package frc.robot.FRCLogger;
 
 public class FRCLogger extends Filemanger {
   public Csv csv;

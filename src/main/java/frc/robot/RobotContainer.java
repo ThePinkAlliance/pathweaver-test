@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -18,12 +20,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import frc.robot.subsystems.Collector;
+import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.TrajectoryBuilder;
-import frc.robot.FRCLogger.src.FRCLogger;
+import frc.robot.FRCLogger.*;
+import frc.robot.PathweaverDash.PathweaverDash;
+import frc.robot.commands.ConveyorAutomated;
+import frc.robot.commands.DoNothing;
 import frc.robot.commands.ResetSensors;
 import frc.robot.commands.Teleop;
+import frc.robot.commands.Vomit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -36,9 +47,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  private final PathweaverDash dash = new PathweaverDash();
+  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem(dash);
   private final TrajectoryBuilder builder = new TrajectoryBuilder();
   private final Joystick m_joystick = new Joystick(0);
+  private final Collector m_collector = new Collector();
+  private final Conveyor m_conveyor = new Conveyor();
 
   String[] ramsetRows = { "leftRef", "leftMeasure", "rightRef", "rightMeasure" };
   FRCLogger ramseteLogger = new FRCLogger("ramset.csv", ramsetRows);
@@ -77,10 +91,12 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    m_conveyor.setDefaultCommand(new ConveyorAutomated(m_conveyor, m_collector));
     m_driveSubsystem.setDefaultCommand(
         new Teleop(this.m_driveSubsystem, () -> m_joystick.getRawAxis(1), () -> m_joystick.getRawAxis(3)));
 
     new JoystickButton(m_joystick, 1).whenPressed(new ResetSensors(m_driveSubsystem));
+    new JoystickButton(m_joystick, 2).whenHeld(new Vomit(m_conveyor, m_collector));
   }
 
   /**
@@ -97,7 +113,34 @@ public class RobotContainer {
     TrajectoryConfig config = new TrajectoryConfig(3.97350993, 2);
     config.setKinematics(m_driveSubsystem.getKinematics());
 
-    Trajectory trajectory = builder.ReadTrajectorys(pickPath.getSelected());
+    Trajectory trajectory = null;
+
+    Supplier<Float> heading = () -> m_driveSubsystem.GetCompass();
+
+    if (heading.get() >= 205 && heading.get() <= 215) {
+      // A Red
+      trajectory = builder.ReadTrajectorys(Trajectorys.ARed);
+      System.out.println("Path A Red");
+    } else if (heading.get() >= 155 && heading.get() <= 165) {
+      // Right A Blue
+      trajectory = builder.ReadTrajectorys(Trajectorys.ABlue);
+      System.out.println("Path A Blue");
+    } else if (heading.get() >= 175 && heading.get() <= 185) {
+      // Straght Path B Blue
+      trajectory = builder.ReadTrajectorys(Trajectorys.BBlue);
+      System.out.println("Path B Blue");
+    } else if (heading.get() >= 225 && heading.get() <= 235) {
+      // Straght Path B Blue
+      trajectory = builder.ReadTrajectorys(Trajectorys.BRed);
+      System.out.println("Path B Red");
+    } else {
+      System.err.println("Could Not Determine The Trajectory");
+      return new DoNothing(m_driveSubsystem);
+    }
+
+    System.out.println(heading.get());
+
+    this.dash.SendInitalPath(trajectory);
 
     RamseteController disabledRamsete = new RamseteController() {
       @Override
@@ -113,7 +156,7 @@ public class RobotContainer {
     var m_rightMeasurement = NetworkTableInstance.getDefault().getTable("troubleshooting")
         .getEntry("right_measurement");
 
-    RamseteCommand command = new RamseteCommand(trajectory, m_driveSubsystem::getPose, new RamseteController(2.0, .7), // .1
+    RamseteCommand command = new RamseteCommand(trajectory, m_driveSubsystem::getPose, new RamseteController(4.0, .3), // .1
                                                                                                                        // .5
         m_driveSubsystem.getFeedForward(), m_driveSubsystem.getKinematics(), m_driveSubsystem::getWheelSpeeds,
         m_driveSubsystem.getLeftPIDController(), m_driveSubsystem.getRightPIDController(),
@@ -137,6 +180,9 @@ public class RobotContainer {
 
     m_driveSubsystem.resetOdometryTo(trajectory.getInitialPose());
 
-    return command.andThen(() -> m_driveSubsystem.set(0, 0));
+    return new ParallelCommandGroup(new ConveyorAutomated(m_conveyor, m_collector),
+        command.andThen(() -> m_driveSubsystem.set(0, 0)));
+
+    // return command.andThen(() -> m_driveSubsystem.set(0, 0));
   }
 }

@@ -23,9 +23,19 @@ public final class Constants {
 
     public static final double distBetweenWheelsInches = 25;// 26.84603809585759;
     public static final double gearRatio = 1 / 13.72;
-    public static final double wheelDiameterInches = 5.75;// 18;
+    public static final double wheelDiameterInches = 5.5;// 18;
     public static final double wheelCircumferenceInches = wheelDiameterInches * Math.PI;
     public static final double encoderTicksPerRev = 2048;
+
+    public static final int collectorRollerCANID = 10;
+    public static double collectorMotorGain = 1;
+
+    public static final int conveyorBeltCANID = 12;
+
+    // DIO Ports
+    public static final int breakbeam1DIOPort = 9;
+    public static final int breakbeam2DIOPort = 8;
+    public static final int breakbeam3DIOPort = 5;
 
     public static final double kS = 0.596;// 0.65;
     public static final double kV = 1.49;// 1.47;
