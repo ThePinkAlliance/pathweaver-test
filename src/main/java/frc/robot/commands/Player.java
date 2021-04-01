@@ -26,7 +26,7 @@ public class Player extends CommandBase {
    */
   public Player(FRCLogger logger, DriveSubsystem drive) {
     // Use addRequirements() here to declare subsystem dependencies.
-  
+
     logger.Close();
 
     file = new File("/home/lvuser/macro.csv");
@@ -35,7 +35,7 @@ public class Player extends CommandBase {
     try {
       scanner = new Scanner(file);
       scanner.useDelimiter(",|\\n");
-    } catch(Exception err) {
+    } catch (Exception err) {
       System.out.println(err.getMessage());
     }
 
@@ -57,6 +57,7 @@ public class Player extends CommandBase {
   public void execute() {
     if (scanner != null && scanner.hasNextDouble()) {
       double t_delta;
+
     }
   }
 
