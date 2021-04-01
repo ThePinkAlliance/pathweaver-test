@@ -57,6 +57,9 @@ public class Player extends CommandBase {
   public void execute() {
     if (scanner != null && scanner.hasNextDouble()) {
       double t_delta;
+      double input = scanner.nextDouble();
+
+      System.out.println(input);
 
     }
   }
