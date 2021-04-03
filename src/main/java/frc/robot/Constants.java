@@ -43,4 +43,68 @@ public final class Constants {
     public static double kP = 2.0;// 2.9;
     public static double kD = 0.0;
     public static double kI = 0.0;
+
+    // Shooter Constants
+    public static double shooterClosePos = 0;
+    public static double shooterClosekP = 0.0004;
+    public static double shooterClosekI = 6e-7;
+    public static double shooterClosekD = 0.00015;
+    public static double shooterClosekIz = 500;
+    public static double shooterClosekFF = 0.00015;
+
+    public static double shooterMidPos = 0.75;
+    public static double shooterMidkP = 0.0004;
+    public static double shooterMidkI = 6e-7;
+    public static double shooterMidkD = 0.00015;
+    public static double shooterMidkIz = 500;
+    public static double shooterMidkFF = 0.00015;
+
+    // Forwards
+    public static double shooterForFarPos = 0.75;
+    public static double shooterForFarkP = 0.0005;
+    public static double shooterForFarkI = 5e-7;
+    public static double shooterForFarkD = 0.0002;
+    public static double shooterForFarkIz = 500;
+    public static double shooterForFarkFF = 0.00015;
+
+    // Backwards
+    public static double shooterRevFarPos = 0.7;
+    public static double shooterRevFarkP = 0.0005;
+    public static double shooterRevFarkI = 5e-7;
+    public static double shooterRevFarkD = 0.0002;
+    public static double shooterRevFarkIz = 500;
+    public static double shooterRevFarkFF = 0.00014;
+
+    // Mix
+    public static double shooterMixFarPos = 0.72;
+    public static double shooterMixFarkP = 0.0005;
+    public static double shooterMixFarkI = 5e-7;
+    public static double shooterMixFarkD = 0.0002;
+    public static double shooterMixFarkIz = 500;
+    public static double shooterMixFarkFF = 0.000145;
+
+    public static double shooterkMaxOutput = 1;
+    public static double shooterkMinOutput = 0;
+
+    public static double shooterTurretMotorGain = 1;
+    public static double shooterkP = 0.1;
+    public static double shooterkI = 0;
+    public static double shooterkD = 0;
+    public static double shooterCloseVelocity = 300;
+    public static double shooterFarVelocity = 400;
+    public static double shooterCloseVoltage = 0.7;
+    public static double shooterFarVoltage = 0.7;
+    public static double conveyorSpeed = 0.5;
+    public static double collectorCollectSpeed = 0.8;
+    public static boolean collectorExtended = true;
+    public static boolean collectorRetracted = false;
+    public static double turretSpeed = 1;
+    public static boolean turretLeft = true;
+    public static boolean turretRight = false;
+
+    public static int shooterRotateCANID = 60; // Brushed
+    public static int shooterFlywheelCANID = 31; // Brushless
+
+    public static int shooterLeftServoPort = 0;
+    public static int shooterRightServoPort = 1;
 }

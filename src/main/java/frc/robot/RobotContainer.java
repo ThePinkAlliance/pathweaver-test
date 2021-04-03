@@ -32,9 +32,7 @@ import frc.robot.commands.ResetSensors;
 import frc.robot.commands.Teleop;
 import frc.robot.commands.Vomit;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -89,6 +87,7 @@ public class RobotContainer {
    * created by instantiating a {@link GenericHID} or one of its subclasses
    * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * x button id: 3, y button id: 4
    */
   private void configureButtonBindings() {
     m_conveyor.setDefaultCommand(new ConveyorAutomated(m_conveyor, m_collector));
@@ -97,6 +96,8 @@ public class RobotContainer {
 
     new JoystickButton(m_joystick, 1).whenPressed(new ResetSensors(m_driveSubsystem));
     new JoystickButton(m_joystick, 2).whenHeld(new Vomit(m_conveyor, m_collector));
+    // new JoystickButton(m_joystick, 6).whenHeld(new ShooterCloseAutomatic(shooter,
+    // m_conveyor));
   }
 
   /**
@@ -110,22 +111,23 @@ public class RobotContainer {
     m_driveSubsystem.resetOdometry();
     m_driveSubsystem.SetCoast();
 
-    TrajectoryConfig config = new TrajectoryConfig(3.97350993, 2);
+    // 3.97350993
+    TrajectoryConfig config = new TrajectoryConfig(4, 3);
     config.setKinematics(m_driveSubsystem.getKinematics());
 
     Trajectory trajectory = null;
 
     Supplier<Float> heading = () -> m_driveSubsystem.GetCompass();
 
-    if (heading.get() >= 205 && heading.get() <= 215) {
+    if (heading.get() >= 210 && heading.get() <= 230) {
       // A Red
       trajectory = builder.ReadTrajectorys(Trajectorys.ARed);
       System.out.println("Path A Red");
-    } else if (heading.get() >= 155 && heading.get() <= 165) {
+    } else if (heading.get() >= 180 && heading.get() <= 190) {
       // Right A Blue
       trajectory = builder.ReadTrajectorys(Trajectorys.ABlue);
       System.out.println("Path A Blue");
-    } else if (heading.get() >= 175 && heading.get() <= 185) {
+    } else if (heading.get() >= 170 && heading.get() <= 180) {
       // Straght Path B Blue
       trajectory = builder.ReadTrajectorys(Trajectorys.BBlue);
       System.out.println("Path B Blue");
