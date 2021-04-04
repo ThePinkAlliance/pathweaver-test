@@ -123,10 +123,12 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setTeleopLeft(double leftVoltage) {
+    System.out.println("left: " + leftVoltage);
     this.leftDrivePrimary.set(ControlMode.PercentOutput, leftVoltage);
   }
 
   public void setTeleopRight(double rightVoltage) {
+    System.out.println("right: " + rightVoltage);
     this.rightDrivePrimary.set(ControlMode.PercentOutput, rightVoltage);
   }
 
@@ -174,11 +176,13 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("heading", getYaw());
     SmartDashboard.putNumber("left encoder vel", this.leftDrivePrimary.getSelectedSensorVelocity());
     SmartDashboard.putNumber("right encoder vel", this.rightDrivePrimary.getSelectedSensorVelocity());
-    // this.speeds.csv.LogWithTime("" + this.leftDrivePrimary.getSelectedSensorVelocity() + ","
-    //     + this.leftDrivePrimary.getSelectedSensorVelocity());
+    // this.speeds.csv.LogWithTime("" +
+    // this.leftDrivePrimary.getSelectedSensorVelocity() + ","
+    // + this.leftDrivePrimary.getSelectedSensorVelocity());
     // this.gyro_log.csv.LogWithTime(Double.valueOf(getHeading().getDegrees()));
-    // this.positions.csv.LogWithTime("" + this.leftDrivePrimary.getSelectedSensorPosition() + ","
-    //     + this.leftDrivePrimary.getSelectedSensorPosition());
+    // this.positions.csv.LogWithTime("" +
+    // this.leftDrivePrimary.getSelectedSensorPosition() + ","
+    // + this.leftDrivePrimary.getSelectedSensorPosition());
 
     SmartDashboard.putNumber("X pose", this.odometry.getPoseMeters().getTranslation().getX());
     SmartDashboard.putNumber("Y pose", this.odometry.getPoseMeters().getTranslation().getY());
@@ -191,6 +195,7 @@ public class DriveSubsystem extends SubsystemBase {
     this.leftPIDController.setI(SmartDashboard.getNumber("kI", Constants.kI));
     this.rightPIDController.setI(SmartDashboard.getNumber("kI", Constants.kI));
 
-    // this.dash.SendRobotPosition(this.odometry.getPoseMeters(), getHeading().getDegrees());
+    // this.dash.SendRobotPosition(this.odometry.getPoseMeters(),
+    // getHeading().getDegrees());
   }
 }

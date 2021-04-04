@@ -7,13 +7,11 @@
 
 package frc.robot.subsystems.player;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FRCLogger.FRCLogger;
 
 public class Recorder extends SubsystemBase {
-  String[] rows = {"Time", "drivetrain-left", "drivetrain-right"};
+  String[] rows = { "Time", "drivetrain-left", "drivetrain-right" };
   FRCLogger logger;
 
   long startTime;
@@ -23,8 +21,11 @@ public class Recorder extends SubsystemBase {
    */
   public Recorder(FRCLogger logger) {
     this.logger = logger;
+  }
 
+  public void Init() {
     startTime = GetCurrentTime();
+    logger.DestructiveCreate();
   }
 
   public long GetCurrentTime() {
@@ -35,7 +36,11 @@ public class Recorder extends SubsystemBase {
     startTime = GetCurrentTime();
   }
 
+  public void close() {
+    logger.Close();
+  }
+
   public void WriteData(double left, double right) {
-    logger.csv.Write("" + (GetCurrentTime() - startTime) + ", " + left + ", " + right + "\n");
+    logger.csv.Write("" + (GetCurrentTime() - startTime) + "," + left + "," + right + "\n");
   }
 }

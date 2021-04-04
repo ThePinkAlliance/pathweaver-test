@@ -19,17 +19,21 @@ public class Player extends CommandBase {
   Scanner scanner;
   DriveSubsystem drive;
 
+  boolean EOF = false;
+  boolean onTime = true;
+  double csvTime;
   long startTime;
 
   /**
    * Creates a new Player.
    */
-  public Player(FRCLogger logger, DriveSubsystem drive) {
+  public Player(DriveSubsystem drive) {
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(drive);
 
-    logger.Close();
+    System.out.println("top constructor");
 
-    file = new File("/home/lvuser/macro.csv");
+    file = new File("/home/lvuser/path.csv");
     this.drive = drive;
 
     try {
@@ -39,7 +43,8 @@ public class Player extends CommandBase {
       System.out.println(err.getMessage());
     }
 
-    addRequirements(drive);
+    System.out.println("bottom constructor");
+
   }
 
   public long GetCurrentTime() {
@@ -56,22 +61,44 @@ public class Player extends CommandBase {
   @Override
   public void execute() {
     if (scanner != null && scanner.hasNextDouble()) {
-      double t_delta;
-      double input = scanner.nextDouble();
+      if (onTime) {
+        csvTime = scanner.nextDouble();
+      }
 
-      System.out.println(input);
+      double t_delta = csvTime - (this.GetCurrentTime() - startTime);
 
+      System.out.println("execute");
+
+      System.out.println("current time: " + (this.GetCurrentTime() - startTime));
+      System.out.println("csv time: " + csvTime);
+
+      if (t_delta <= 0) {
+        onTime = true;
+
+        drive.setTeleopLeft(scanner.nextDouble());
+        drive.setTeleopRight(scanner.nextDouble());
+      } else {
+        onTime = false;
+      }
+    } else {
+      if (scanner != null) {
+        scanner.close();
+
+        this.EOF = true;
+        System.out.println("EOF TRUE");
+      }
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    drive.setTeleop(0, 0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return this.EOF;
   }
 }
