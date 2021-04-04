@@ -70,6 +70,7 @@ public class RobotContainer {
     pickPath.addOption("Galactic-Search", "Galactic");
     pickPath.addOption("Slaolm", "Slaolm");
     pickPath.addOption("Barrel", "Barrel");
+    pickPath.addOption("Bounce", "Bounce");
 
     // pickPath.addOption("Straght", "output/straight.wpilib.json");
     // pickPath.addOption("left", "output/left.wpilib.json");
@@ -144,13 +145,14 @@ public class RobotContainer {
         System.err.println("Could Not Determine The Trajectory");
         return new DoNothing(m_driveSubsystem);
       }
-
+      
       System.out.println(heading.get());
-
     } else if (pickPath.getSelected() == "Slaolm") {
       trajectory = builder.ReadTrajectorys(Trajectorys.Slaolm);
     } else if (pickPath.getSelected() == "Barrel") {
       trajectory = builder.ReadTrajectorys(Trajectorys.Barrel);
+    } else if (pickPath.getSelected() == "Bounce") {
+      trajectory = builder.ReadTrajectorys(Trajectorys.Bounce);
     }
 
     this.dash.SendInitalPath(trajectory);
