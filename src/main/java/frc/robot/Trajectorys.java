@@ -15,6 +15,8 @@ public interface Trajectorys {
         public String ARed = "output/A-Red.wpilib.json";
         public String BBlue = "output/B-Blue.wpilib.json";
         public String BRed = "output/B-Red.wpilib.json";
+        public String Slaolm = "output/slaolm.wpilib.json";
+        public String Barrel = "output/barrel.wpilib.json";
 
         public List<Pose2d> PathARed = Arrays.asList(new Pose2d(), new Pose2d(2.286, 0, new Rotation2d()),
                         new Pose2d(4.572, 1.524, new Rotation2d()), new Pose2d(8.763, 1.524, new Rotation2d()));

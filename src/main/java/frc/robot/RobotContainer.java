@@ -67,14 +67,18 @@ public class RobotContainer {
     m_driveSubsystem.resetHeading();
     m_driveSubsystem.resetOdometry();
 
-    pickPath.addOption("Straght", "output/straight.wpilib.json");
-    pickPath.addOption("left", "output/left.wpilib.json");
-    pickPath.addOption("right", "output/right.wpilib.json");
-    pickPath.addOption("qmark", "output/qmark.wpilib.json");
-    pickPath.addOption("A-Blue", "output/A-Blue.wpilib.json");
-    pickPath.addOption("A-Red", "output/A-Red.wpilib.json");
-    pickPath.addOption("B-Blue", "output/B-Blue.wpilib.json");
-    pickPath.addOption("B-Red", "output/B-Red.wpilib.json");
+    pickPath.addOption("Galactic-Search", "Galactic");
+    pickPath.addOption("Slaolm", "Slaolm");
+    pickPath.addOption("Barrel", "Barrel");
+
+    // pickPath.addOption("Straght", "output/straight.wpilib.json");
+    // pickPath.addOption("left", "output/left.wpilib.json");
+    // pickPath.addOption("right", "output/right.wpilib.json");
+    // pickPath.addOption("qmark", "output/qmark.wpilib.json");
+    // pickPath.addOption("A-Blue", "output/A-Blue.wpilib.json");
+    // pickPath.addOption("A-Red", "output/A-Red.wpilib.json");
+    // pickPath.addOption("B-Blue", "output/B-Blue.wpilib.json");
+    // pickPath.addOption("B-Red", "output/B-Red.wpilib.json");
 
     SmartDashboard.putData(pickPath);
     SmartDashboard.putNumber("kP", Constants.kP);
@@ -119,31 +123,37 @@ public class RobotContainer {
 
     Supplier<Float> heading = () -> m_driveSubsystem.GetCompass();
 
-    if (heading.get() >= 140 && heading.get() <= 150) {
-      // A Red
-      trajectory = builder.ReadTrajectorys(Trajectorys.ARed);
-      System.out.println("Path A Red");
-    } else if (heading.get() >= 50 && heading.get() <= 60) {
-      // Right A Blue
-      trajectory = builder.ReadTrajectorys(Trajectorys.ABlue);
-      System.out.println("Path A Blue");
-    } else if (heading.get() >= 85 && heading.get() <= 95) {
-      // Straght Path B Blue
-      trajectory = builder.ReadTrajectorys(Trajectorys.BBlue);
-      System.out.println("Path B Blue");
-    } else if (heading.get() >= 110 && heading.get() <= 120) {
-      // Straght Path B Blue
-      trajectory = builder.ReadTrajectorys(Trajectorys.BRed);
-      System.out.println("Path B Red");
-    } else {
-      System.err.println("Could Not Determine The Trajectory");
-      return new DoNothing(m_driveSubsystem);
+    if (pickPath.getSelected() == "Galactic") {
+      if (heading.get() >= 140 && heading.get() <= 150) {
+        // A Red
+        trajectory = builder.ReadTrajectorys(Trajectorys.ARed);
+        System.out.println("Path A Red");
+      } else if (heading.get() >= 50 && heading.get() <= 60) {
+        // Right A Blue
+        trajectory = builder.ReadTrajectorys(Trajectorys.ABlue);
+        System.out.println("Path A Blue");
+      } else if (heading.get() >= 85 && heading.get() <= 95) {
+        // Straght Path B Blue
+        trajectory = builder.ReadTrajectorys(Trajectorys.BBlue);
+        System.out.println("Path B Blue");
+      } else if (heading.get() >= 110 && heading.get() <= 120) {
+        // Straght Path B Blue
+        trajectory = builder.ReadTrajectorys(Trajectorys.BRed);
+        System.out.println("Path B Red");
+      } else {
+        System.err.println("Could Not Determine The Trajectory");
+        return new DoNothing(m_driveSubsystem);
+      }
+
+      System.out.println(heading.get());
+
+    } else if (pickPath.getSelected() == "Slaolm") {
+      trajectory = builder.ReadTrajectorys(Trajectorys.Slaolm);
+    } else if (pickPath.getSelected() == "Barrel") {
+      trajectory = builder.ReadTrajectorys(Trajectorys.Barrel);
     }
 
-    System.out.println(heading.get());
-
     this.dash.SendInitalPath(trajectory);
-
     RamseteController disabledRamsete = new RamseteController() {
       @Override
       public ChassisSpeeds calculate(Pose2d currentPose, Pose2d poseRef, double linearVelocityRefMeters,
