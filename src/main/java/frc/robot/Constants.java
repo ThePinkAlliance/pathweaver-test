@@ -27,7 +27,7 @@ public final class Constants {
     public static final double wheelCircumferenceInches = wheelDiameterInches * Math.PI;
     public static final double encoderTicksPerRev = 2048;
 
-    public static final int collectorRollerCANID = 10;
+    public static final int collectorRollerCANID = 20;
     public static double collectorMotorGain = 1;
 
     public static final int conveyorBeltCANID = 12;

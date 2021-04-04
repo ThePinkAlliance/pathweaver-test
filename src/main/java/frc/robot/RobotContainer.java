@@ -119,19 +119,19 @@ public class RobotContainer {
 
     Supplier<Float> heading = () -> m_driveSubsystem.GetCompass();
 
-    if (heading.get() >= 210 && heading.get() <= 230) {
+    if (heading.get() >= 140 && heading.get() <= 150) {
       // A Red
       trajectory = builder.ReadTrajectorys(Trajectorys.ARed);
       System.out.println("Path A Red");
-    } else if (heading.get() >= 180 && heading.get() <= 190) {
+    } else if (heading.get() >= 50 && heading.get() <= 60) {
       // Right A Blue
       trajectory = builder.ReadTrajectorys(Trajectorys.ABlue);
       System.out.println("Path A Blue");
-    } else if (heading.get() >= 170 && heading.get() <= 180) {
+    } else if (heading.get() >= 85 && heading.get() <= 95) {
       // Straght Path B Blue
       trajectory = builder.ReadTrajectorys(Trajectorys.BBlue);
       System.out.println("Path B Blue");
-    } else if (heading.get() >= 225 && heading.get() <= 235) {
+    } else if (heading.get() >= 110 && heading.get() <= 120) {
       // Straght Path B Blue
       trajectory = builder.ReadTrajectorys(Trajectorys.BRed);
       System.out.println("Path B Red");
