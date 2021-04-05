@@ -14,12 +14,14 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.DriveSubsystem;
@@ -51,6 +53,8 @@ public class RobotContainer {
   private final Joystick m_joystick = new Joystick(0);
   private final Collector m_collector = new Collector();
   private final Conveyor m_conveyor = new Conveyor();
+
+  private DifferentialDriveVoltageConstraint voltageConstraint;
 
   String[] ramsetRows = { "leftRef", "leftMeasure", "rightRef", "rightMeasure" };
   FRCLogger ramseteLogger = new FRCLogger("ramset.csv", ramsetRows);
@@ -85,6 +89,9 @@ public class RobotContainer {
     SmartDashboard.putNumber("kP", Constants.kP);
     SmartDashboard.putNumber("kD", Constants.kD);
     SmartDashboard.putNumber("kI", Constants.kI);
+
+    voltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(10, 12),
+        m_driveSubsystem.getKinematics(), 10);
   }
 
   /**
@@ -117,35 +124,36 @@ public class RobotContainer {
     m_driveSubsystem.SetCoast();
 
     // 3.97350993
-    TrajectoryConfig config = new TrajectoryConfig(4, 3);
+    TrajectoryConfig config = new TrajectoryConfig(3, 1);
     config.setKinematics(m_driveSubsystem.getKinematics());
+    config.addConstraint(voltageConstraint);
 
     Trajectory trajectory = null;
 
     Supplier<Float> heading = () -> m_driveSubsystem.GetCompass();
 
     if (pickPath.getSelected() == "Galactic") {
-      if (heading.get() >= 140 && heading.get() <= 150) {
+      if (heading.get() >= 260 && heading.get() <= 275) {
         // A Red
         trajectory = builder.ReadTrajectorys(Trajectorys.ARed);
         System.out.println("Path A Red");
-      } else if (heading.get() >= 50 && heading.get() <= 60) {
-        // Right A Blue
+      } else if (heading.get() >= 155 && heading.get() <= 165) {
+        // A Blue
         trajectory = builder.ReadTrajectorys(Trajectorys.ABlue);
         System.out.println("Path A Blue");
-      } else if (heading.get() >= 85 && heading.get() <= 95) {
-        // Straght Path B Blue
+      } else if (heading.get() >= 195 && heading.get() <= 205) {
+        // B Blue
         trajectory = builder.ReadTrajectorys(Trajectorys.BBlue);
         System.out.println("Path B Blue");
-      } else if (heading.get() >= 110 && heading.get() <= 120) {
-        // Straght Path B Blue
+      } else if (heading.get() >= 225 && heading.get() <= 235) {
+        // Path B Red
         trajectory = builder.ReadTrajectorys(Trajectorys.BRed);
         System.out.println("Path B Red");
       } else {
         System.err.println("Could Not Determine The Trajectory");
         return new DoNothing(m_driveSubsystem);
       }
-      
+
       System.out.println(heading.get());
     } else if (pickPath.getSelected() == "Slaolm") {
       trajectory = builder.ReadTrajectorys(Trajectorys.Slaolm);
@@ -196,7 +204,5 @@ public class RobotContainer {
 
     return new ParallelCommandGroup(new ConveyorAutomated(m_conveyor, m_collector),
         command.andThen(() -> m_driveSubsystem.set(0, 0)));
-
-    // return command.andThen(() -> m_driveSubsystem.set(0, 0));
   }
 }
