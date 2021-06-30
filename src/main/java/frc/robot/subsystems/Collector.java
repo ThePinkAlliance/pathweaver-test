@@ -12,7 +12,8 @@ public class Collector extends SubsystemBase {
   // private Solenoid collectorExtendSol = new
   // Solenoid(RobotContainer.collectorSolPort);
   CANSparkMax collector = new CANSparkMax(Constants.collectorRollerCANID, MotorType.kBrushless);
-  CANEncoder collectorEncoder = new CANEncoder(collector);
+  CANEncoder collectorEncoder = collector.getEncoder();
+
   private double collectorPower = 0;
 
   public Collector() {

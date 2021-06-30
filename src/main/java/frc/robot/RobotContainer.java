@@ -124,7 +124,7 @@ public class RobotContainer {
     m_driveSubsystem.SetCoast();
 
     // 3.97350993
-    TrajectoryConfig config = new TrajectoryConfig(3, 1);
+    TrajectoryConfig config = new TrajectoryConfig(3.25, 1.2);
     config.setKinematics(m_driveSubsystem.getKinematics());
     config.addConstraint(voltageConstraint);
 
